@@ -1,0 +1,122 @@
+:root {
+  --left: #61cf7d;
+  --right: #58b6ec;
+  --mid: #F2BE5C;
+  --target: #e37373;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #CCE8CF;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+span {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 5px;
+  background-color: rgb(237, 237, 237);
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px;
+  transition: all 1s;
+}
+
+.left {
+  background-color: var(--left);
+}
+
+.right {
+  background-color: var(--right);
+}
+
+.mid {
+  background-color: var(--mid);
+}
+
+.target {
+  border: 5px solid var(--target);
+  line-height: 40px; /* 调整文本居中 */
+}
+
+.btn-container {
+  position: absolute;
+  bottom: 100px;
+}
+
+button:nth-child(1) {
+  background-color: var(--left);
+  cursor: pointer;
+}
+button:nth-child(2) {
+  background-color: var(--mid);
+  cursor: pointer;
+}
+button:nth-child(3) {
+  background-color: var(--right);
+}
+
+button {
+  width: 120px;
+  height: 50px;
+  margin: 0 7px;
+  border-radius: 25px;
+  border: 0;
+  background-color: var(--mid);
+  font-size: 16px;
+}
+
+.inputBtn {
+  padding-left: 30px;
+}
+
+input {
+  width: 50px;
+  font-size: 16px;
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  outline: none;
+}
+
+.color {
+  position: absolute;
+  bottom: 30px;
+}
+
+.color span {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+}
+
+.color label {
+  vertical-align: 3px;
+}
+
+.color span:nth-child(1) {
+  background-color: var(--left);
+}
+.color span:nth-child(3) {
+  background-color: var(--mid);
+}
+.color span:nth-child(5) {
+  background-color: var(--right);
+}
+.color span:nth-child(7) {
+  border: 3px solid var(--target);
+}

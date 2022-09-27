@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./vue@3.2.38.js"></script>
+  <title>Binary Search</title>
+</head>
+<body>
+  <div id="app">
+    <span v-for="(n,idx) in nums" :key="idx" ref="n" @click="changeTarget" :style="{cursor}">{{n}}</span>
+    <div class="btn-container">
+      <button @click="newNums">New Nums</button>
+      <button @click="next">▶</button>
+      <button class="inputBtn">Len:<input type="number" min="3" max="30" v-model.number.lazy="len"></input></button>
+    </div>
+    <div class="color">
+      <span></span><label>left</label>
+      <span></span><label>mid</label>
+      <span></span><label>right</label>
+      <span></span><label>target</label>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, reactive, computed, watch, onMounted, onBeforeMount, nextTick } = Vue
+    const app = createApp({
+      setup(){
+        let nums = reactive([1,2,3,4,5,6])
+        const left = ref(0)
+        const right = ref(0)
+        const targetIdx = ref(1)
+        const len = ref(15)
+        const cursor = ref('pointer')
+
+        //computed
+        const mid = computed(() => Math.floor((left.value + right.value) / 2))
+        const target = computed({
+          get(){
+            return nums[targetIdx.value]
+          },
+          set(val){
+            targetIdx.value = nums.indexOf(val)
+          }
+        })
+
+        //watch
+        const n = ref([])
+        
+        function watchFunc(className, val, old){
+          if (old >= len.value){
+            n.value[val].classList.add(className)
+          } else {
+            n.value[old].classList.remove(className)
+            n.value[val].classList.add(className)
+          }
+        }
+        watch(left,(val, old)=>{
+          watchFunc('left', val, old)
+        })
+        watch(right,(val, old)=>{
+          watchFunc('right', val, old)
+        })
+        watch(mid,(val, old)=>{
+          watchFunc('mid', val, old)
+        })
+        watch(targetIdx,(val, old)=>{
+          watchFunc('target', val, old)
+        })
+        watch(len,(val)=>{
+          newNums()
+          if (val > 30) this.len = 30
+          if (val < 3) this.len = 3
+          if(targetIdx.value >= val) targetIdx.value = 1
+        })
+        
+        //播放按钮
+        function next(){
+          if (left.value <= right.value) {
+            let num = nums[mid.value]
+            if (target.value === num) {
+              alert("目标值索引为：" + mid.value)
+            } else if (target.value > num) {
+              left.value = mid.value + 1
+            } else {
+              right.value = mid.value - 1
+            }
+          }
+          cursor.value = 'not-allowed'
+        }
+
+        //判断是否为页面初始状态，只有初始状态下可以修改target
+        function changeTarget(e){
+          if (right.value === nums.length - 1 & left.value === 0) {
+            target.value = Number(e.target.innerText)
+          }
+        }
+
+        //创建一个新数组
+        function newNums(){
+          let newNums = []
+          for (let i = 0; i < len.value; i++){
+            let num = Math.floor(Math.random()*100) 
+            if (!newNums.includes(num)) {
+              newNums.push(num)
+            } else {
+              i--
+            }
+            newNums.sort((a, b) => a - b)
+          }
+          for(let i = 0; i < newNums.length; i++){
+            nums[i] = newNums[i]
+          }
+          for(let i = nums.length - 1; i >= newNums.length; i--){
+            nums.pop()
+          }
+          cursor.value = 'pointer'
+          left.value = 0
+          nextTick(()=>{right.value = nums.length - 1})
+        }
+
+        //给数组中相应的索引添加颜色
+        function addColor(){
+          n.value[left.value].classList.add('left')
+          n.value[right.value].classList.add('right')
+          n.value[mid.value].classList.add('mid')
+          n.value[targetIdx.value].classList.add('target')
+        }
+
+        //初始化
+        onBeforeMount(()=>{ newNums() })
+        onMounted(()=>{ addColor() })
+
+        return {nums, left, right, targetIdx, len, n, cursor, newNums, changeTarget, next}
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

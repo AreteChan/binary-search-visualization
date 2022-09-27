@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./vue@v2.7.8.js"></script>
+  <title>Binary Search</title>
+</head>
+<body>
+  <div id="app">
+    <span v-for="(n,idx) in nums" :key="idx" ref="n" @click="changeTarget" :style="{cursor}">{{n}}</span>
+    <div class="btn-container">
+      <button @click="newNums">New Nums</button>
+      <button @click="next">▶</button>
+      <button class="inputBtn">Len:<input type="number" min="3" max="30" v-model.number.lazy="len"></input></button>
+    </div>
+    <div class="color">
+      <span></span><label>left</label>
+      <span></span><label>mid</label>
+      <span></span><label>right</label>
+      <span></span><label>target</label>
+    </div>
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          nums: [], //目标数组
+          left: 0,  //左侧索引
+          right: 0, //右侧索引
+          targetIdx: 1, //目标值索引
+          len: 15,  //数组长度
+          cursor: 'pointer' //数组的cursor样式
+        }
+      },
+      computed: {
+        //中部指针索引
+        mid(){ 
+          return Math.floor((this.left + this.right) / 2)
+        },
+        //目标值
+        target:{
+          get(){ 
+            return this.nums[this.targetIdx]
+          },
+          set(val){
+            this.targetIdx = this.nums.indexOf(val)
+          }
+        }
+      },
+      //监视left/right/mid/targetIdx/len
+      //前4个监视代码相似度很高，可以用函数封装起来，在vue3版本里我就用了封装
+      watch: {
+        left(val, old){
+          if (old >= this.len){
+            this.$refs.n[val].classList.add('left')
+          } else {
+            this.$refs.n[old].classList.remove('left')
+            this.$refs.n[val].classList.add('left')
+          }
+        },
+        right(val, old){
+          if (old >= this.len){
+            this.$refs.n[val].classList.add('right')
+          } else {
+            this.$refs.n[old].classList.remove('right')
+            this.$refs.n[val].classList.add('right')
+          }
+        },
+        mid(val, old){
+          if (old >= this.len){
+            this.$refs.n[val].classList.add('mid')
+          } else {
+            this.$refs.n[old].classList.remove('mid')
+            this.$refs.n[val].classList.add('mid')
+          }
+        },
+        targetIdx(val, old){
+          if (old >= this.len){
+            this.$refs.n[val].classList.add('target')
+          } else {
+            this.$refs.n[old].classList.remove('target')
+            this.$refs.n[val].classList.add('target')
+          }
+        },
+        len(val){
+          //长度更新时，创建新数组
+          this.newNums()
+          if (val > 30) this.len = 30
+          if (val < 3) this.len = 3
+          //防止targetIdx溢出
+          if(this.targetIdx >= val) this.targetIdx = 1
+        }
+      },
+      methods: {
+        //给数组中相应的索引添加颜色，初始化时执行
+        addColor(){
+          this.$refs.n[this.left].classList.add('left')
+          this.$refs.n[this.right].classList.add('right')
+          this.$refs.n[this.mid].classList.add('mid')
+          this.$refs.n[this.targetIdx].classList.add('target')
+        },
+        //点击播放按钮时执行该函数
+        next(){
+          if (this.left <= this.right) {
+            let num = this.nums[this.mid]
+            if (this.target === num) {
+              alert("目标值索引为：" + this.mid)
+            } else if (this.target > num) {
+              this.left = this.mid + 1
+            } else {
+              this.right = this.mid - 1
+            }
+          }
+          this.cursor = 'not-allowed'
+        },
+        changeTarget(e){
+          //判断是否为页面初始状态，只有初始状态下可以修改target
+          if (this.right === this.len - 1 & this.left === 0) {
+            this.target = Number(e.target.innerText)
+          }
+        },
+        newNums(){
+          let newNums = []
+          for (let i = 0; i < this.len; i++){
+            let num = Math.floor(Math.random()*100) 
+            if (!newNums.includes(num)) { newNums.push(num) } 
+            else { i-- }
+            newNums.sort((a, b) => a - b)
+          }
+          this.nums = newNums
+          this.cursor = 'pointer'
+          this.left = 0
+          //DOM更新后执行，防止right的watch报错
+          this.$nextTick(function(){this.right = this.len - 1})
+        },
+      },
+      //初始化
+      created() {
+        this.newNums()
+      },
+      mounted() {
+        this.addColor()
+      },
+    })
+  </script>
+</body>
+</html>
